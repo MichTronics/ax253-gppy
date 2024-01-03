@@ -133,20 +133,246 @@ class Frame:
     )
     info: bytes = field(default=b"", converter=bytes_or_encode_utf8)
 
+    ### Change the code here for setting C-Bit in the SSID byte
+    ### Add all of the AX25Frames.
+    
     @classmethod
-    def ui(
+    def i(
+        cls,
+        destination: Union[Address, str],
+        source: Union[Address, str],
+        path: Optional[Sequence[Union[Address, str]]] = None,
+        dcr: bool = None,
+        scr: bool = None,
+    ):
+        """Create an I-frame with the given information."""
+        return cls(
+            destination=Address.from_any(destination, a0_dcr=dcr),
+            source=Address.from_any(source, a7_hldc=not bool(path), a0_scr=scr),
+            path=[Address.from_any(p, a7_hldc=(p == path[-1])) for p in path or []],
+            control=Control(FrameType.I.value),  # I-frame control field value
+        )
+
+    @classmethod
+    def s_rr(
+        cls,
+        destination: Union[Address, str],
+        source: Union[Address, str],
+        path: Optional[Sequence[Union[Address, str]]] = None,
+        dcr: bool = None,
+        scr: bool = None,
+    ):
+        """Create an S-RR frame with the given information."""
+        return cls(
+            destination=Address.from_any(destination, a0_dcr=dcr),
+            source=Address.from_any(source, a7_hldc=not bool(path), a0_scr=scr),
+            path=[Address.from_any(p, a7_hldc=(p == path[-1])) for p in path or []],
+            control=Control(FrameType.S_RR.value),  # S-RR control field value
+        )
+
+    @classmethod
+    def s_rnr(
+        cls,
+        destination: Union[Address, str],
+        source: Union[Address, str],
+        path: Optional[Sequence[Union[Address, str]]] = None,
+        dcr: bool = None,
+        scr: bool = None,
+    ):
+        """Create an S-RNR frame with the given information."""
+        return cls(
+            destination=Address.from_any(destination, a0_dcr=dcr),
+            source=Address.from_any(source, a7_hldc=not bool(path), a0_scr=scr),
+            path=[Address.from_any(p, a7_hldc=(p == path[-1])) for p in path or []],
+            control=Control(FrameType.S_RNR.value),  # S-RNR control field value
+        )
+        
+    @classmethod
+    def s_rej(
+        cls,
+        destination: Union[Address, str],
+        source: Union[Address, str],
+        path: Optional[Sequence[Union[Address, str]]] = None,
+        dcr: bool = None,
+        scr: bool = None,
+    ):
+        """Create an S-REJ frame with the given information."""
+        return cls(
+            destination=Address.from_any(destination, a0_dcr=dcr),
+            source=Address.from_any(source, a7_hldc=not bool(path), a0_scr=scr),
+            path=[Address.from_any(p, a7_hldc=(p == path[-1])) for p in path or []],
+            control=Control(FrameType.S_REJ.value),  # S-REJ control field value
+        )
+    
+    def s_srej(
+        cls,
+        destination: Union[Address, str],
+        source: Union[Address, str],
+        path: Optional[Sequence[Union[Address, str]]] = None,
+        dcr: bool = None,
+        scr: bool = None,
+    ):
+        """Create an S-SREJ frame with the given information."""
+        return cls(
+            destination=Address.from_any(destination, a0_dcr=dcr),
+            source=Address.from_any(source, a7_hldc=not bool(path), a0_scr=scr),
+            path=[Address.from_any(p, a7_hldc=(p == path[-1])) for p in path or []],
+            control=Control(FrameType.S_SREJ.value),  # Use the predefined S-SREJ control field value
+        )
+        
+    @classmethod
+    def u_sabm(
+        cls,
+        destination: Union[Address, str],
+        source: Union[Address, str],
+        path: Optional[Sequence[Union[Address, str]]] = None,
+        dcr: bool = None,
+        scr: bool = None,
+    ):
+        """Create a SABM frame with the given information."""
+        return cls(
+            destination=Address.from_any(destination, a0_dcr=dcr),
+            source=Address.from_any(source, a7_hldc=not bool(path), a0_scr=scr),
+            path=[Address.from_any(p, a7_hldc=(p == path[-1])) for p in path or []],
+            control=Control(FrameType.U_SABM.value),  # SABM control field value
+        )
+    
+    @classmethod
+    def u_sabme(
+        cls,
+        destination: Union[Address, str],
+        source: Union[Address, str],
+        path: Optional[Sequence[Union[Address, str]]] = None,
+        dcr: bool = None,
+        scr: bool = None,
+    ):
+        """Create an S-SABME frame with the given information."""
+        return cls(
+            destination=Address.from_any(destination, a0_dcr=dcr),
+            source=Address.from_any(source, a7_hldc=not bool(path), a0_scr=scr),
+            path=[Address.from_any(p, a7_hldc=(p == path[-1])) for p in path or []],
+            control=Control(FrameType.U_SABME.value),  # Use the predefined SABME control field value
+        )
+    
+    @classmethod
+    def u_disc(
+        cls,
+        destination: Union[Address, str],
+        source: Union[Address, str],
+        path: Optional[Sequence[Union[Address, str]]] = None,
+        dcr: bool = None,
+        scr: bool = None,
+    ):
+        """Create an S-DISC frame with the given information."""
+        return cls(
+            destination=Address.from_any(destination, a0_dcr=dcr),
+            source=Address.from_any(source, a7_hldc=not bool(path), a0_scr=scr),
+            path=[Address.from_any(p, a7_hldc=(p == path[-1])) for p in path or []],
+            control=Control(FrameType.U_DISC.value),  # Use the predefined DISC control field value
+        )
+
+    @classmethod
+    def u_dm(
+        cls,
+        destination: Union[Address, str],
+        source: Union[Address, str],
+        path: Optional[Sequence[Union[Address, str]]] = None,
+        dcr: bool = None,
+        scr: bool = None,
+    ):
+        """Create an S-DM frame with the given information."""
+        return cls(
+            destination=Address.from_any(destination, a0_dcr=dcr),
+            source=Address.from_any(source, a7_hldc=not bool(path), a0_scr=scr),
+            path=[Address.from_any(p, a7_hldc=(p == path[-1])) for p in path or []],
+            control=Control(FrameType.U_DM.value),  # Use the predefined DM control field value
+        )
+    
+    @classmethod
+    def u_ua(
+        cls,
+        destination: Union[Address, str],
+        source: Union[Address, str],
+        path: Optional[Sequence[Union[Address, str]]] = None,
+        dcr: bool = None,
+        scr: bool = None,
+    ):
+        """Create an S-UA frame with the given information."""
+        return cls(
+            destination=Address.from_any(destination, a0_dcr=dcr),
+            source=Address.from_any(source, a7_hldc=not bool(path), a0_scr=scr),
+            path=[Address.from_any(p, a7_hldc=(p == path[-1])) for p in path or []],
+            control=Control(FrameType.U_UA.value),  # Use the predefined UA control field value
+        )
+    
+    @classmethod
+    def u_frmr(
+        cls,
+        destination: Union[Address, str],
+        source: Union[Address, str],
+        path: Optional[Sequence[Union[Address, str]]] = None,
+        dcr: bool = None,
+        scr: bool = None,
+    ):
+        """Create a U-FRMR frame with the given information."""
+        return cls(
+            destination=Address.from_any(destination, a0_dcr=dcr),
+            source=Address.from_any(source, a7_hldc=not bool(path), a0_scr=scr),
+            path=[Address.from_any(p, a7_hldc=(p == path[-1])) for p in path or []],
+            control=Control(FrameType.U_FRMR.value),  # Use the predefined U-FRMR control field value
+        )
+    
+    @classmethod
+    def u_ui(
         cls,
         destination: Union[Address, str],
         source: Union[Address, str],
         path: Optional[Sequence[Union[Address, str]]] = None,
         info: bytes = b"",
+        dcr: bool = None,
+        scr: bool = None,
     ):
         """Create a UI frame with the given information."""
         return cls(
-            destination=Address.from_any(destination),
-            source=Address.from_any(source, a7_hldc=not bool(path)),
+            destination=Address.from_any(destination, a0_dcr=dcr),
+            source=Address.from_any(source, a7_hldc=not bool(path), a0_scr=scr),
             path=[Address.from_any(p, a7_hldc=(p == path[-1])) for p in path or []],
+            control=Control(FrameType.U_UI.value), # U-UI control field value
             info=info,
+        )
+    
+    @classmethod
+    def u_xid(
+        cls,
+        destination: Union[Address, str],
+        source: Union[Address, str],
+        path: Optional[Sequence[Union[Address, str]]] = None,
+        dcr: bool = None,
+        scr: bool = None,
+    ):
+        """Create a U-XID frame with the given information."""
+        return cls(
+            destination=Address.from_any(destination, a0_dcr=dcr),
+            source=Address.from_any(source, a7_hldc=not bool(path), a0_scr=scr),
+            path=[Address.from_any(p, a7_hldc=(p == path[-1])) for p in path or []],
+            control=Control(FrameType.U_XID.value),  # U-XID control field value
+        )
+    
+    @classmethod
+    def u_test(
+        cls,
+        destination: Union[Address, str],
+        source: Union[Address, str],
+        path: Optional[Sequence[Union[Address, str]]] = None,
+        dcr: bool = None,
+        scr: bool = None,
+    ):
+        """Create a U-TEST frame with the given information."""
+        return cls(
+            destination=Address.from_any(destination, a0_dcr=dcr),
+            source=Address.from_any(source, a7_hldc=not bool(path), a0_scr=scr),
+            path=[Address.from_any(p, a7_hldc=(p == path[-1])) for p in path or []],
+            control=Control(FrameType.U_TEST.value),  # U-TEST control field value
         )
 
     @classmethod

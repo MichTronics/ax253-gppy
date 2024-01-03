@@ -33,7 +33,20 @@ class Address:
     digi: bool = field(default=False, converter=bool)
     """If true, indicates that this address has digipeated the packet."""
     # The high order bit of HLDC; True indicates end of address information.
-    a7_hldc: bool = field(default=False, converter=bool, repr=False)
+    a7_hldc: bool = field(default=True, converter=bool, repr=False)
+
+    ##### New code for changing the C-Bit in the SSID byte ######
+    #   Frame Type          Dest. SSID C-Bit    Source SSID C-Bit
+    #
+    #  Previous versions             0                    0
+    #  Command (V.2.0)               1                    0
+    #  Response (V.2.0)              0                    1
+    #  Previous versions             1                    1
+    ##############################################################
+    """If true it set the C-Bit to be a command."""
+    a0_dcr: bool = field(default=False, converter=bool, repr=False)
+    """If true it set the C-Bit to be a response."""
+    a0_scr: bool = field(default=False, converter=bool, repr=False)
 
     @classmethod
     def from_bytes(cls, ax25_address: bytes, **kwargs: Any) -> "Address":
@@ -61,7 +74,7 @@ class Address:
 
     @classmethod
     def from_str(
-        cls, address_spec: str, a7_hldc: bool = False, **kwargs: Any,
+        cls, address_spec: str, a7_hldc: bool = False, dcr: bool = None, scr: bool = None, **kwargs: Any,
     ) -> "Address":
         """Create an address from a string (TNC2 format)."""
         digi = "*" in address_spec
@@ -75,6 +88,9 @@ class Address:
             ssid=ssid,
             digi=digi,
             a7_hldc=digi or a7_hldc,
+            # Add this for setting the c bit in the SSID byte.
+            a0_dcr=dcr,
+            a0_scr=scr,
         )
         if kwargs:
             init_kwargs.update(**kwargs)
@@ -114,9 +130,10 @@ class Address:
         callsign = bytes(b << 1 for b in self.callsign.ljust(6))
         a7 = bitarray()
         a7.frombytes(bytes([self.ssid << 1]))
-        a7[0] = self.digi and self.a7_hldc
+        ### Change the code for setting the C bit in the SSID byte.
+        a7[0] = self.digi and self.a0_dcr or self.a0_scr
         a7[1:3] = True  # r
-        a7[7] = self.a7_hldc
+        a7[7] = self.a7_hldc 
         return callsign + a7.tobytes()
 
     def evolve(self, **kwargs) -> "Address":
